@@ -1,59 +1,54 @@
 # Design Note: Low-Level Architecture & Domain Model
-**Author:** Priyanshu (Candidate Submission)  
+**Candidate:** Priyanshu  
+**Assignment:** LLD Practice Platform — Engineering Assignment  
 **Date:** September 2026  
-**Assignment:** CipherSchools Hiring Assignment - LLD Practice Platform  
 
 ---
 
-## 1. MVP Scope & User Journey
-The platform delivers a focused, zero-bloat practice loop engineered for iterative mastery of Low-Level Design:
+## 1. The MVP Scope & User Flow
+
+The goal of this MVP is to build a fast, reliable practice loop that helps a developer improve their Low-Level Design skills through repeated attempts:
 
 ```
-[Choose Problem] ──> [Structured Design Canvas] ──> [Submit Solution]
-                                                           │
-                                                           ▼
-[Compare Attempts] <── [Review Attempt History] <── [Explainable Feedback]
+[Choose Problem] ──> [Structured 5-Part Canvas] ──> [Submit Solution]
+                                                          │
+                                                          ▼
+[Compare Attempts] <── [Review Attempt History] <── [Evidence-Based Feedback]
 ```
 
-1. **Problem Exploration**: The learner selects a problem (e.g. *Parking Lot*, *Elevator Control*, *Vending Machine*, *Rate Limiter*, *Splitwise*) with explicit functional requirements, non-functional constraints, and dimensional rubric weights.
-2. **Structured Architectural Canvas**: The learner supplies 5 design dimensions: *Requirements & Scope*, *Class Structure / UML*, *Design Patterns Rationale*, *Implementation Code*, and *Trade-offs & Concurrency*.
-3. **Resilient Evaluation Engine**: The submission is stored safely before undergoing a composite pipeline (Deterministic Validator $\rightarrow$ Rubric-driven LLM Evaluator $\rightarrow$ Heuristic Fallback).
-4. **Explainable Feedback**: Feedback provides overall score, grade, verbatim quoted *evidence*, identified *concerns*, and actionable *suggestions* per rubric dimension.
-5. **Iterative Progression Tracking**: The learner creates Attempt #2, reviews delta metrics ($\Delta \text{Score}$ per dimension), and verifies architectural growth.
+1. **Pick a Problem:** The learner chooses from 5 curated classic LLD problems (*Parking Lot*, *Elevator System*, *Vending Machine*, *Rate Limiter*, *Splitwise*), each with clear requirements, constraints, and hints.
+2. **Work on the Solution:** Instead of a single text box, the learner provides their assumptions, class relationships, design patterns, code, and concurrency trade-offs.
+3. **Submit & Evaluate:** The system validates basic structure deterministically, runs the evaluation pipeline, and generates structured rubric feedback.
+4. **Review & Iterate:** The learner reviews specific suggestions, starts **Attempt #2**, and opens the **Comparison Modal** to see if their score and architectural decisions improved.
 
 ---
 
-## 2. Core Domain Model & Class Responsibilities
+## 2. Domain Model & Class Responsibilities
 
-The domain model follows pure **Domain-Driven Design (DDD)** with clean separation of entities, value objects, domain interfaces, and strategy pipelines:
+I structured the backend using clean Object-Oriented principles and Domain-Driven Design (DDD) boundaries. The core entities and their responsibilities are:
 
 ```mermaid
 classDiagram
     class Problem {
         +String id
-        +String slug
         +String title
         +Difficulty difficulty
         +List~String~ functionalRequirements
         +List~String~ keyEntitiesExpected
         +Rubric rubric
-        +toJSON(): Object
     }
 
     class Attempt {
         +String id
         +String problemId
-        +String learnerId
         +int attemptNumber
         -AttemptStatus status
         -Submission submission
         -EvaluationResult evaluation
-        -String failureReason
-        +submit(Submission): void
-        +startEvaluation(): void
-        +completeEvaluation(EvaluationResult): void
-        +failEvaluation(String): void
-        +canTransitionTo(AttemptStatus): boolean
+        +submit(Submission)
+        +startEvaluation()
+        +completeEvaluation(EvaluationResult)
+        +failEvaluation(reason)
     }
 
     class Submission {
@@ -62,8 +57,7 @@ classDiagram
         +String designPatternsRationale
         +String implementationCode
         +String tradeoffsAndEdgeCases
-        +String format
-        +getSectionCompleteness(): Object
+        +getSectionCompleteness()
     }
 
     class EvaluationResult {
@@ -73,34 +67,27 @@ classDiagram
         +List~CriterionEvaluation~ criteria
         +List~String~ strengths
         +List~String~ keyAreasForImprovement
-        +String evaluatedBy
     }
 
     class CriterionEvaluation {
         +RubricDimension dimension
-        +String criterion
         +int score
         +int weight
         +String evidence
         +String concern
         +String suggestion
-        +double confidence
         +getWeightedScore(): double
     }
 
     class IEvaluationStrategy {
         <<interface>>
-        +name: String
-        +supports(format): boolean
         +evaluate(Submission, Problem): Promise~EvaluationResult~
     }
 
     class CompositeEvaluationPipeline {
         -List~IEvaluationStrategy~ strategies
-        -ISubmissionValidator validator
-        +registerStrategy(strategy): void
-        +validate(Submission, Problem): ValidationResult
-        +evaluate(Submission, Problem): Promise~EvaluationResult~
+        +registerStrategy(strategy)
+        +evaluate(Submission, Problem)
     }
 
     Problem "1" *-- "1" Rubric
@@ -110,97 +97,66 @@ classDiagram
     CompositeEvaluationPipeline ..> IEvaluationStrategy
 ```
 
-### Class Responsibilities Matrix
+### Why each class exists:
 
-| Class / Interface | Pattern / Archetype | Primary Responsibility |
-| :--- | :--- | :--- |
-| `Problem` | Entity (Aggregate Root) | Holds problem specifications, constraints, key expected entities, and custom `Rubric`. |
-| `Attempt` | Entity (State Machine) | Manages learner attempt lifecycle, enforces valid status transitions, and preserves historical data. |
-| `Submission` | Value Object | Encapsulates candidate multi-section design input with completeness calculation methods. |
-| `Rubric` | Value Object | Defines evaluation dimensions and normalizes criteria weights to 100%. |
-| `EvaluationResult` | Value Object | Bundles overall score, letter grade, and dimensional criteria breakdown. |
-| `CriterionEvaluation` | Value Object | Encapsulates single-dimension feedback (`score`, `evidence`, `concern`, `suggestion`, `confidence`). |
-| `IEvaluationStrategy` | Strategy Pattern | Abstraction contract for pluggable evaluation engines (LLM, Heuristic, AST). |
-| `CompositeEvaluationPipeline` | Pipeline / Chain | Orchestrates pre-flight validation and prioritized evaluator execution with fallback resilience. |
-| `IAttemptRepository` | Repository Pattern | Persistence boundary decoupling attempt lifecycle from storage technology. |
+* **`Problem` (Aggregate Root):** Represents the problem specification, requirements, constraints, expected domain nouns, and rubric weights.
+* **`Attempt` (State Machine):** Manages the lifecycle of a learner's attempt. It strictly controls valid state transitions:
+  $$\text{CREATED} \longrightarrow \text{SUBMITTED} \longrightarrow \text{EVALUATING} \longrightarrow \text{COMPLETED} \; / \; \text{FAILED}$$
+  This ensures an attempt cannot be evaluated before being submitted, and protects against invalid operations.
+* **`Submission` (Value Object):** Holds the learner's 5 design inputs and calculates section completeness.
+* **`Rubric` & `CriterionEvaluation` (Value Objects):** Represents the 6 design dimensions. Each criterion encapsulates: `score`, `weight`, `evidence` (quote from submission), `concern`, `suggestion`, and `confidence`.
+* **`IEvaluationStrategy` (Strategy Pattern):** An interface that defines how any evaluation engine (LLM, Heuristic rule engine, AST parser) must evaluate a submission.
+* **`CompositeEvaluationPipeline` (Pipeline Pattern):** Runs pre-flight deterministic checks and then executes evaluation strategies in priority order with fallback resilience.
 
 ---
 
-## 3. Evaluation Approach: Deterministic vs. AI Division of Labor
+## 3. Division of Labor: Deterministic vs. AI Logic
 
-A central architectural decision is avoiding generic unconstrained prompts (e.g. *"Is this good code?"*). We divide responsibilities between deterministic algorithms and LLM reasoning:
+One of the main design questions in this assignment is: *Which parts should be deterministic, and which parts benefit from an LLM?*
 
-```
-[Incoming Submission]
-         │
-         ▼
-┌──────────────────────────────────────┐
-│ Deterministic Pre-Flight Validator   │ ──> (Fails if empty, placeholder, or malformed)
-└──────────────────────────────────────┘
-         │ Passes
-         ▼
-┌────────────────────────────────────────────────────────┐
-│ Primary Evaluator: Structured JSON Schema LLM Strategy │
-│ (Evaluates SRP, coupling, pattern fit, trade-offs)     │
-└────────────────────────────────────────────────────────┘
-         │ (If API key absent, network timeout, or schema error)
-         ▼ [Automatic Fallback]
-┌────────────────────────────────────────────────────────┐
-│ Secondary Evaluator: Heuristic Deterministic Strategy  │
-│ (Regex entity extraction, interface check, God-class   │
-│ detection, concurrency modifier parsing)               │
-└────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌──────────────────────────────────────┐
-│ Final Normalized EvaluationResult    │
-└──────────────────────────────────────┘
-```
+Rather than asking an LLM to do everything (which leads to hallucinations and unreliable scores), I separated the responsibilities:
 
-### Deterministic vs. LLM Responsibilities
-
-| Responsibility Area | Handled By | Why This Division Is Optimal |
+| Task | Handled By | Why |
 | :--- | :--- | :--- |
-| **Section Completeness & Length** | Deterministic Pre-Flight | Fast, zero-cost rejection of empty or placeholder submissions. |
-| **State Machine Transitions** | Deterministic (`Attempt`) | Invariant protection; prevents illegal transitions (e.g. evaluating before submitting). |
-| **Mathematical Weight Sums** | Deterministic (`Rubric`) | Eliminates LLM calculation hallucinations; ensures score is strictly normalized to 100. |
-| **Entity & Modifiers Detection** | Deterministic Heuristic | Extracts keywords (`synchronized`, `interface`, `implements`) instantly without external API dependencies. |
-| **Architectural Cohesion & SRP** | LLM / Semantic Heuristic | Evaluates if a class has single responsibility or is doing too much. |
-| **Evidence Extraction & Actionable Suggestions** | LLM / Rule Heuristic | Quotes candidate code directly and provides actionable engineering remedies. |
+| **Input validation & spam detection** | Deterministic (`ISubmissionValidator`) | Fast, zero-cost checks for empty fields, character counts, and placeholder text (`lorem ipsum`, `todo`). |
+| **State transitions & attempt sequencing** | Deterministic (`Attempt`) | Invariant rules belong in the domain entity, not in AI logic. |
+| **Weighted score calculation** | Deterministic (`Rubric`) | Overall scores are calculated strictly by multiplying criterion scores with pre-set weights, avoiding math errors. |
+| **Keyword & modifier detection** | Deterministic Heuristic | Checks for explicit modifiers (`synchronized`, `volatile`, `interface`, `private`) and GoF pattern mentions. |
+| **Responsibility analysis & trade-offs** | Structured LLM / Heuristic | Assessing whether a class has too many responsibilities (SRP) or whether coupling is too tight requires semantic reasoning. |
+| **Evidence extraction & actionable advice** | Structured LLM / Heuristic | Pulling relevant quotes from candidate text and providing targeted suggestions for the next attempt. |
 
 ---
 
 ## 4. Extensibility Tests (Change Tests A & B)
 
-### Change Test A: Introducing a New Submission Format (e.g. Interactive UML / AST)
-*Question: Today the learner submits text/code. Later the platform supports an interactive visual UML class diagram. How much of the domain model changes?*
+### Change Test A: Supporting a New Submission Format
+*Question: Today the learner submits text and code. Later we add an interactive visual class diagram tool. How much of the domain model changes?*
 
-- **Domain Impact: ZERO changes to `Problem`, `Attempt`, `EvaluationResult`, or `AttemptService`.**
-- **Changes Required**:
-  1. Add `'interactive_uml'` to the `format` discriminator in `Submission`.
-  2. Implement an `IInteractiveUmlParser` or specialized `IEvaluationStrategy` that parses UML nodes/edges.
-  3. Register the new strategy in `CompositeEvaluationPipeline`.
+* **Impact on core domain: ZERO changes to `Problem`, `Attempt`, `EvaluationResult`, or `AttemptService`.**
+* What changes:
+  1. Add `'diagram_json'` to the `format` property in `Submission`.
+  2. Implement an `IDiagramParser` or a strategy that understands node-edge graphs.
+  3. Register the strategy in `CompositeEvaluationPipeline`.
 
-### Change Test B: Adding a New Evaluator (e.g. Static AST Analyzer or Human Peer Review)
-*Question: Later we add an AST rule-based linter or peer reviewer. Can we add it without rewriting the practice flow?*
+### Change Test B: Adding a New Evaluator
+*Question: Later we add an AST static analysis tool or human peer reviews. Can we plug it in without rewriting the practice flow?*
 
-- **Domain Impact: ZERO changes to core attempt orchestration.**
-- **Changes Required**:
-  1. Create `class AstStaticAnalysisEvaluator implements IEvaluationStrategy`.
-  2. Call `pipeline.registerStrategy(new AstStaticAnalysisEvaluator())`.
-  3. The `AttemptService` and API routes remain 100% untouched.
+* **Impact on core flow: ZERO changes to the attempt lifecycle.**
+* What changes:
+  1. Create a class implementing `IEvaluationStrategy` (e.g. `AstLinterEvaluator` or `HumanReviewEvaluator`).
+  2. Call `pipeline.registerStrategy(new AstLinterEvaluator())`.
+  3. The `AttemptService`, API routes, and frontend state machine continue working without any modifications.
 
 ---
 
-## 5. Failure Handling, Asynchronous Resilience & Scale
+## 5. Practical Reliability, Async Handling & Scale
 
-1. **Submission Persistence Before Evaluation:**
-   When `POST /api/attempts/:id/submit` is called, the `Attempt` state transitions to `SUBMITTED` and is persisted **before** calling the evaluation strategy. If the evaluator crashes or network drops, the candidate's work is never lost.
-2. **State Machine Lifecycle:**
-   `CREATED` $\longrightarrow$ `SUBMITTED` $\longrightarrow$ `EVALUATING` $\longrightarrow$ `COMPLETED` / `FAILED`.
-   If evaluation fails, the attempt is marked `FAILED` with `failureReason`, enabling one-click retry via `POST /api/attempts/:id/retry`.
-3. **Idempotency & Concurrency:**
-   Attempt numbers are sequential per problem/learner. Submitting an already completed attempt is blocked by the entity state guard.
-4. **Scaling Path (Lightweight HLD Evolution):**
-   - **Phase 1 (Current Prototype):** Fast in-memory repository with async non-blocking evaluation and instant heuristic fallback.
-   - **Phase 2 (Production Scale):** Replace `InMemoryAttemptRepository` with `PostgresAttemptRepository` (Prisma/TypeORM). Move LLM evaluation from in-process promises to a Redis-backed worker queue (BullMQ / Celery) with server-sent events (SSE) for real-time client updates.
+To keep the system robust without over-engineering distributed microservices:
+
+1. **Save Before Evaluating:** When a user clicks submit, the submission is saved to the database/repository in the `SUBMITTED` state **before** the evaluator runs. If the AI service times out or the network drops, the candidate's work is never lost.
+2. **Graceful Fallback:** If no OpenAI/Gemini API key is provided, or if an API call times out, the pipeline automatically falls back to `HeuristicRubricEvaluator`. The app runs 100% offline out-of-the-box.
+3. **Failure Recovery:** If evaluation encounters an error, the attempt moves to `FAILED` with a human-readable `failureReason`, and the user can click **Retry** with one click.
+4. **Idempotency:** Re-submitting an already evaluated attempt is blocked by the entity state guard.
+5. **Path to Scale (Lightweight HLD):** For this prototype, a clean in-memory monolith is fast and simple. If traffic grows, the easiest scaling step is:
+   - Swap `InMemoryAttemptRepository` with a PostgreSQL database.
+   - Offload the evaluation call to a background job queue (e.g. BullMQ / Redis) and push real-time updates to the UI via Server-Sent Events (SSE).

@@ -1,71 +1,85 @@
-# Research Note: Rethinking Low-Level Design (LLD) Practice & Evaluation
-**Author:** Priyanshu (Candidate Submission)  
+# Research Note: Why Low-Level Design Practice is Broken & How to Fix It
+**Candidate:** Priyanshu  
+**Assignment:** LLD Practice Platform — Engineering Assignment  
 **Date:** September 2026  
-**Assignment:** CipherSchools Hiring Assignment - LLD Practice Platform  
 
 ---
 
-## 1. Executive Summary & Problem Analysis
-Low-Level Design (LLD) and Object-Oriented Domain Modeling are core components of senior software engineering assessments. However, while **Data Structures & Algorithms (DSA)** benefits from deterministic automated test fixtures (e.g. LeetCode, HackerRank) and **System Design (HLD)** benefits from high-level capacity calculations and block architecture diagrams, **Low-Level Design suffers from an acute evaluation gap**.
+## 1. The Core Problem: Why Practicing LLD is Frustrating
 
-When a learner designs a *Parking Lot*, *Elevator Controller*, or *Rate Limiter*, they face fundamental uncertainty:
-- *Are my class responsibilities cohesive (Single Responsibility Principle)?*
-- *Did I over-engineer with unnecessary design patterns, or did I hardcode logic that violates the Open-Closed Principle?*
-- *Is my concurrency handling sound, or will it deadlock under multi-threaded gate access?*
-- *How does my solution compare to alternative valid architectural paradigms?*
+When practicing Data Structures & Algorithms (DSA), the feedback loop is crystal clear: your code either passes the 50 hidden test cases or it times out on an edge case. 
 
-Without targeted, explainable, and iterative feedback, learners default to passive memorization of static GitHub repositories, which fails to develop real engineering judgement.
+Low-Level Design (LLD) is completely different. When an engineer sits down to design a **Parking Lot**, an **Elevator System**, or a **Splitwise app**, they usually face three big questions:
+1. *Did I split responsibilities cleanly, or did I accidentally build a massive God-class that handles everything?*
+2. *Is my design actually extensible, or will adding one new requirement break all my classes?*
+3. *If my solution looks completely different from the solution on GitHub, is mine actually wrong, or is it just a valid alternative trade-off?*
 
----
-
-## 2. Competitive Landscape & Existing Approaches Researched
-
-We analyzed four prevailing methods candidates use to practice LLD:
-
-| Approach / Platform | Workflow & Submission Model | Feedback Mechanism | Critical Gaps & Failure Modes |
-| :--- | :--- | :--- | :--- |
-| **1. Static GitHub Repositories** *(e.g., ts-lld, awesome-low-level-design)* | Learner reads pre-written Java/C++ classes and attempts to recreate them. | Binary self-comparison against a single "golden" reference solution. | **Dogmatic Reference Bias**: Penalizes valid alternative designs (e.g., using Strategy vs State pattern). Fails to explain *why* trade-offs were made. |
-| **2. DSA Platforms with LLD Tags** *(e.g., LeetCode Design Problems)* | Learner submits code to pass unit tests and I/O test cases. | Binary unit test pass/fail + execution runtime percentile. | **Over-Indexes on I/O Syntax**: A learner can pass LeetCode's *Design Underground System* with a monolithic 500-line God-class full of nested hash maps, learning completely anti-OOP habits. |
-| **3. Generic LLM Prompting** *(e.g., ChatGPT / Claude raw chats)* | Learner pastes code and asks "Review my LLD design". | Unstructured narrative text with generic praise and arbitrary nitpicks. | **Subjectivity & Hallucination**: Lacks a standardized rubric. Fails to cite verbatim evidence or track iterative delta across attempts. |
-| **4. Live Human Mock Interviews** *(e.g., Pramp, Interviewing.io)* | 45-minute verbal & whiteboard session with an engineer. | Qualitative rubric and conversational feedback. | **High Friction & Inconsistency**: Extremely expensive, difficult to schedule, and highly variable depending on interviewer bias. |
+Because there are no automated unit tests that can grade "good Object-Oriented Design," learners are left guessing. They usually memorize static solutions from YouTube or GitHub without really understanding *why* certain design choices were made.
 
 ---
 
-## 3. Key Gaps in Current Practice
+## 2. What I Found When Researching Existing Tools
 
-From our research, three fundamental gaps prevent effective LLD learning:
+I spent time analyzing how developers currently prepare for LLD interviews and looked at the four most common options:
 
-1. **Absence of Evidence-Based Evaluation:** Feedback often makes sweeping generalizations ("Your design is not extensible") without citing concrete code or class structures from the learner's submission.
-2. **The "Single Right Answer" Fallacy:** Existing tools grade against one rigid class hierarchy. In real software engineering, multiple valid designs exist with distinct trade-offs (e.g. memory efficiency vs polymorphism). Feedback must evaluate *fitness for constraints*, not template matching.
-3. **Broken Improvement Loop:** Current platforms treat practice as a one-shot exam rather than an iterative cycle:
-   $$\text{Choose Problem} \longrightarrow \text{Design} \longrightarrow \text{Submit} \longrightarrow \text{Evaluate} \longrightarrow \text{Reflect} \longrightarrow \text{Re-attempt}$$
-   Learners rarely have visibility into how Attempt #2 improved upon the specific design flaws identified in Attempt #1.
+### 1. Static GitHub Repositories (e.g., "awesome-low-level-design")
+* **What people do:** Read someone else's Java/C++ code and try to rewrite it from memory.
+* **The Problem:** It reinforces the idea that there is only **one golden solution**. If you used the Strategy Pattern instead of the State Pattern, you have no way to know whether your choice was reasonable. It teaches memorization rather than design thinking.
 
----
+### 2. LeetCode "Design" Problems (e.g., Design Underground System, LRU Cache)
+* **What people do:** Write code to satisfy specific function inputs and outputs.
+* **The Problem:** LeetCode only checks I/O correctness. You can pass the test suite with a 400-line monolithic class filled with nested HashMaps and raw integers. It rewards quick algorithmic hacks and completely ignores SOLID principles, encapsulation, and clean abstractions.
 
-## 4. Proposed Product Direction & Architectural Philosophy
+### 3. Asking General-Purpose AI (ChatGPT / Claude / Copilot)
+* **What people do:** Paste their code and ask *"Is this a good LLD design?"*
+* **The Problem:** Unstructured AI feedback is usually overly polite, giving generic compliments and arbitrary nitpicks (like variable naming). It rarely quotes specific lines of code as evidence, changes its opinion if you ask twice, and doesn't grade against a consistent standard.
 
-To solve this, we designed the **LLD Practice Platform** around three core product principles:
-
-### A. Structured Multi-Modal Submission Canvas
-Rather than forcing a blank code box, we guide the learner to think like a Software Architect by decomposing their submission into 5 essential artifacts:
-1. **Requirements & Clarifying Assumptions** (Defining scope, actors, and constraints)
-2. **Class Structure / Model** (Entities, attributes, methods, and relationships)
-3. **Design Pattern Rationale** (Justifying why specific GoF patterns were chosen)
-4. **Core Implementation Code** (Demonstrating interfaces, encapsulation, and type safety)
-5. **Trade-offs & Concurrency** (Addressing thread-safety, race conditions, and OCP extension points)
-
-### B. Standardized 6-Dimension Evaluation Rubric
-We evaluate all submissions against an objective, 100-point dimensional rubric:
-$$\text{Total Score} = \sum_{i=1}^{6} (\text{Score}_i \times \text{Weight}_i)$$
-
-Each criterion strictly adheres to the schema:
-$$\mathbf{Criterion} \longrightarrow \mathbf{Score} \longrightarrow \mathbf{Evidence} \longrightarrow \mathbf{Concern} \longrightarrow \mathbf{Suggestion} \longrightarrow \mathbf{Confidence}$$
-
-### C. First-Class Multi-Attempt Delta Analytics
-The platform retains attempt history, enabling learners to re-attempt problems and instantly visualize dimensional score shifts ($\Delta \text{Score}$), verifying that previous architectural weaknesses were systematically resolved.
+### 4. Paid Mock Interviews (Pramp / Interviewing.io)
+* **What people do:** 45-minute live sessions with a senior engineer.
+* **The Problem:** Highly valuable, but too expensive and high-friction for daily, iterative practice.
 
 ---
 
-## 5. Conclusion
-By separating deterministic structural checks from rubric-driven evaluation, providing evidence-backed suggestions, and tracking iterative progress, the LLD Practice Platform transforms Low-Level Design from a subjective guessing game into a rigorous, learnable engineering discipline.
+## 3. The Three Major Gaps
+
+From this research, three missing pieces became clear:
+
+1. **Feedback Must Cite Real Evidence:** General comments like *"your design is tightly coupled"* aren't helpful. Feedback needs to point directly to the learner's code: *"Class ParkingFloor directly instantiates HourlyPricingStrategy on line 12 instead of taking an IPricingStrategy interface in its constructor."*
+2. **There is No Single "Right" Answer:** Two completely different designs can both be good if their trade-offs make sense for the problem's constraints. Evaluation must grade how well the solution satisfies the requirements, not whether it matches a template.
+3. **Practice Requires an Iteration Loop, Not a One-Time Test:** The whole point of practice is:
+   $$\text{Attempt \#1} \longrightarrow \text{See Mistakes} \longrightarrow \text{Fix Them in Attempt \#2} \longrightarrow \text{Verify Improvement}$$
+   Current tools treat an attempt as a dead end. Learners need to see a side-by-side comparison of what changed between attempts.
+
+---
+
+## 4. Product Direction & Approach
+
+To build a focused, practical MVP, I designed the product around three core ideas:
+
+### A. A Structured 5-Part Design Canvas
+Instead of giving the user a blank code editor (which encourages jumping straight into writing methods without thinking), the canvas asks for the five things an interviewer actually looks for:
+1. **Assumptions & Scope:** What is in scope and what is left out?
+2. **Class Structure / Model:** What are the domain entities, attributes, and relationships?
+3. **Design Patterns & Rationale:** Why was a pattern chosen over simple logic?
+4. **Implementation Code:** Clean interfaces, access modifiers, and core methods.
+5. **Trade-offs & Concurrency:** How are thread-safety and race conditions handled?
+
+### B. A Fixed 6-Dimension Rubric
+Every submission is evaluated against 6 concrete design dimensions:
+- *Requirement Understanding (15%)*
+- *Class Responsibilities & Cohesion / SRP (20%)*
+- *Coupling, Interfaces & Encapsulation (20%)*
+- *Appropriate Use of Design Patterns (15%)*
+- *Extensibility & Trade-offs (15%)*
+- *Edge Cases, Concurrency & Testability (15%)*
+
+For each dimension, the feedback must provide:  
+$$\textbf{Criterion} \longrightarrow \textbf{Score} \longrightarrow \textbf{Evidence (Quote)} \longrightarrow \textbf{Concern} \longrightarrow \textbf{Suggestion}$$
+
+### C. Attempt History & Delta Comparison
+Every attempt is saved. When a learner submits a second attempt after fixing their code, they can open a **Comparison View** that shows exact score deltas ($\Delta \text{Score}$) per dimension, confirming that they actually resolved the previous flaws.
+
+---
+
+## 5. Summary
+By structuring the submission, evaluating against an evidence-based rubric, and letting learners measure improvement across attempts, this platform turns Low-Level Design from subjective guesswork into a practical, repeatable learning loop.
