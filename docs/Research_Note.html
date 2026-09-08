@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Research Note - LLD Practice Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body { font-size: 10.5pt; padding: 0; }
+      @page { margin: 15mm 15mm; }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    table { page-break-inside: avoid; }
+    h1, h2, h3 { page-break-after: avoid; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 p-8 max-w-4xl mx-auto">
+  <div class="print-container">
+    <h1 class="text-3xl font-extrabold text-gray-900 border-b pb-3 mb-4">Research Note: Rethinking Low-Level Design (LLD) Practice & Evaluation</h1>
+<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Author:</strong> Priyanshu (Candidate Submission)</p>
+<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Date:</strong> September 2026</p>
+<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Assignment:</strong> CipherSchools Hiring Assignment - LLD Practice Platform</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">---</p>
+
+<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">1. Executive Summary & Problem Analysis</h2>
+<p class="text-gray-700 leading-relaxed my-2.5">Low-Level Design (LLD) and Object-Oriented Domain Modeling are core components of senior software engineering assessments. However, while <strong class="font-bold text-gray-900">Data Structures & Algorithms (DSA)</strong> benefits from deterministic automated test fixtures (e.g. LeetCode, HackerRank) and <strong class="font-bold text-gray-900">System Design (HLD)</strong> benefits from high-level capacity calculations and block architecture diagrams, <strong class="font-bold text-gray-900">Low-Level Design suffers from an acute evaluation gap</strong>.</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">When a learner designs a <em class="italic text-gray-800">Parking Lot</em>, <em class="italic text-gray-800">Elevator Controller</em>, or <em class="italic text-gray-800">Rate Limiter</em>, they face fundamental uncertainty:</p>
+<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Are my class responsibilities cohesive (Single Responsibility Principle)?</em></li>
+<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Did I over-engineer with unnecessary design patterns, or did I hardcode logic that violates the Open-Closed Principle?</em></li>
+<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Is my concurrency handling sound, or will it deadlock under multi-threaded gate access?</em></li>
+<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">How does my solution compare to alternative valid architectural paradigms?</em></li>
+
+<p class="text-gray-700 leading-relaxed my-2.5">Without targeted, explainable, and iterative feedback, learners default to passive memorization of static GitHub repositories, which fails to develop real engineering judgement.</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">---</p>
+
+<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">2. Competitive Landscape & Existing Approaches Researched</h2>
+
+<p class="text-gray-700 leading-relaxed my-2.5">We analyzed four prevailing methods candidates use to practice LLD:</p>
+
+<div class="overflow-x-auto my-4"><table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm"><thead><tr class="bg-gray-50"><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Approach / Platform</th><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Workflow & Submission Model</th><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Feedback Mechanism</th><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Critical Gaps & Failure Modes</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">1. Static GitHub Repositories</strong> <em class="italic text-gray-800">(e.g., ts-lld, awesome-low-level-design)</em></td><td class="px-3 py-2 text-gray-700">Learner reads pre-written Java/C++ classes and attempts to recreate them.</td><td class="px-3 py-2 text-gray-700">Binary self-comparison against a single "golden" reference solution.</td><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Dogmatic Reference Bias</strong>: Penalizes valid alternative designs (e.g., using Strategy vs State pattern). Fails to explain <em class="italic text-gray-800">why</em> trade-offs were made.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">2. DSA Platforms with LLD Tags</strong> <em class="italic text-gray-800">(e.g., LeetCode Design Problems)</em></td><td class="px-3 py-2 text-gray-700">Learner submits code to pass unit tests and I/O test cases.</td><td class="px-3 py-2 text-gray-700">Binary unit test pass/fail + execution runtime percentile.</td><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Over-Indexes on I/O Syntax</strong>: A learner can pass LeetCode's <em class="italic text-gray-800">Design Underground System</em> with a monolithic 500-line God-class full of nested hash maps, learning completely anti-OOP habits.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">3. Generic LLM Prompting</strong> <em class="italic text-gray-800">(e.g., ChatGPT / Claude raw chats)</em></td><td class="px-3 py-2 text-gray-700">Learner pastes code and asks "Review my LLD design".</td><td class="px-3 py-2 text-gray-700">Unstructured narrative text with generic praise and arbitrary nitpicks.</td><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Subjectivity & Hallucination</strong>: Lacks a standardized rubric. Fails to cite verbatim evidence or track iterative delta across attempts.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">4. Live Human Mock Interviews</strong> <em class="italic text-gray-800">(e.g., Pramp, Interviewing.io)</em></td><td class="px-3 py-2 text-gray-700">45-minute verbal & whiteboard session with an engineer.</td><td class="px-3 py-2 text-gray-700">Qualitative rubric and conversational feedback.</td><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">High Friction & Inconsistency</strong>: Extremely expensive, difficult to schedule, and highly variable depending on interviewer bias.</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-2.5">---</p>
+
+<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">3. Key Gaps in Current Practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-2.5">From our research, three fundamental gaps prevent effective LLD learning:</p>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Absence of Evidence-Based Evaluation:</strong> Feedback often makes sweeping generalizations ("Your design is not extensible") without citing concrete code or class structures from the learner's submission.</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">The "Single Right Answer" Fallacy:</strong> Existing tools grade against one rigid class hierarchy. In real software engineering, multiple valid designs exist with distinct trade-offs (e.g. memory efficiency vs polymorphism). Feedback must evaluate <em class="italic text-gray-800">fitness for constraints</em>, not template matching.</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Broken Improvement Loop:</strong> Current platforms treat practice as a one-shot exam rather than an iterative cycle:</li>
+<p class="text-gray-700 leading-relaxed my-2.5">$$\text{Choose Problem} \longrightarrow \text{Design} \longrightarrow \text{Submit} \longrightarrow \text{Evaluate} \longrightarrow \text{Reflect} \longrightarrow \text{Re-attempt}$$</p>
+<p class="text-gray-700 leading-relaxed my-2.5">Learners rarely have visibility into how Attempt #2 improved upon the specific design flaws identified in Attempt #1.</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">---</p>
+
+<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">4. Proposed Product Direction & Architectural Philosophy</h2>
+
+<p class="text-gray-700 leading-relaxed my-2.5">To solve this, we designed the <strong class="font-bold text-gray-900">LLD Practice Platform</strong> around three core product principles:</p>
+
+<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">A. Structured Multi-Modal Submission Canvas</h3>
+<p class="text-gray-700 leading-relaxed my-2.5">Rather than forcing a blank code box, we guide the learner to think like a Software Architect by decomposing their submission into 5 essential artifacts:</p>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Requirements & Clarifying Assumptions</strong> (Defining scope, actors, and constraints)</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Class Structure / Model</strong> (Entities, attributes, methods, and relationships)</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Design Pattern Rationale</strong> (Justifying why specific GoF patterns were chosen)</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Core Implementation Code</strong> (Demonstrating interfaces, encapsulation, and type safety)</li>
+<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Trade-offs & Concurrency</strong> (Addressing thread-safety, race conditions, and OCP extension points)</li>
+
+<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">B. Standardized 6-Dimension Evaluation Rubric</h3>
+<p class="text-gray-700 leading-relaxed my-2.5">We evaluate all submissions against an objective, 100-point dimensional rubric:</p>
+<p class="text-gray-700 leading-relaxed my-2.5">$$\text{Total Score} = \sum_{i=1}^{6} (\text{Score}_i \times \text{Weight}_i)$$</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">Each criterion strictly adheres to the schema:</p>
+<p class="text-gray-700 leading-relaxed my-2.5">$$\mathbf{Criterion} \longrightarrow \mathbf{Score} \longrightarrow \mathbf{Evidence} \longrightarrow \mathbf{Concern} \longrightarrow \mathbf{Suggestion} \longrightarrow \mathbf{Confidence}$$</p>
+
+<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">C. First-Class Multi-Attempt Delta Analytics</h3>
+<p class="text-gray-700 leading-relaxed my-2.5">The platform retains attempt history, enabling learners to re-attempt problems and instantly visualize dimensional score shifts ($\Delta \text{Score}$), verifying that previous architectural weaknesses were systematically resolved.</p>
+
+<p class="text-gray-700 leading-relaxed my-2.5">---</p>
+
+<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">5. Conclusion</h2>
+<p class="text-gray-700 leading-relaxed my-2.5">By separating deterministic structural checks from rubric-driven evaluation, providing evidence-backed suggestions, and tracking iterative progress, the LLD Practice Platform transforms Low-Level Design from a subjective guessing game into a rigorous, learnable engineering discipline.</p>
+
+  </div>
+</body>
+</html>
