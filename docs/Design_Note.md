@@ -27,86 +27,16 @@ The goal of this MVP is to build a fast, reliable practice loop that helps a dev
 
 I structured the backend using clean Object-Oriented principles and Domain-Driven Design (DDD) boundaries. The core entities and their responsibilities are:
 
-```mermaid
-classDiagram
-    class Problem {
-        +String id
-        +String title
-        +Difficulty difficulty
-        +List~String~ functionalRequirements
-        +List~String~ keyEntitiesExpected
-        +Rubric rubric
-    }
+### Core Domain Entities & Interfaces
 
-    class Attempt {
-        +String id
-        +String problemId
-        +int attemptNumber
-        -AttemptStatus status
-        -Submission submission
-        -EvaluationResult evaluation
-        +submit(Submission)
-        +startEvaluation()
-        +completeEvaluation(EvaluationResult)
-        +failEvaluation(reason)
-    }
-
-    class Submission {
-        +String requirementsAndAssumptions
-        +String classModelTextOrDiagram
-        +String designPatternsRationale
-        +String implementationCode
-        +String tradeoffsAndEdgeCases
-        +getSectionCompleteness()
-    }
-
-    class EvaluationResult {
-        +int overallScore
-        +String grade
-        +String summary
-        +List~CriterionEvaluation~ criteria
-        +List~String~ strengths
-        +List~String~ keyAreasForImprovement
-    }
-
-    class CriterionEvaluation {
-        +RubricDimension dimension
-        +int score
-        +int weight
-        +String evidence
-        +String concern
-        +String suggestion
-        +getWeightedScore(): double
-    }
-
-    class IEvaluationStrategy {
-        <<interface>>
-        +evaluate(Submission, Problem): Promise~EvaluationResult~
-    }
-
-    class CompositeEvaluationPipeline {
-        -List~IEvaluationStrategy~ strategies
-        +registerStrategy(strategy)
-        +evaluate(Submission, Problem)
-    }
-
-    Problem "1" *-- "1" Rubric
-    Attempt "1" *-- "0..1" Submission
-    Attempt "1" *-- "0..1" EvaluationResult
-    EvaluationResult "1" *-- "6" CriterionEvaluation
-    CompositeEvaluationPipeline ..> IEvaluationStrategy
-```
-
-### Why each class exists:
-
-* **`Problem` (Aggregate Root):** Represents the problem specification, requirements, constraints, expected domain nouns, and rubric weights.
-* **`Attempt` (State Machine):** Manages the lifecycle of a learner's attempt. It strictly controls valid state transitions:
-  $$\text{CREATED} \longrightarrow \text{SUBMITTED} \longrightarrow \text{EVALUATING} \longrightarrow \text{COMPLETED} \; / \; \text{FAILED}$$
+- **`Problem` (Aggregate Root):** Represents the problem specification, requirements, constraints, expected domain nouns, and rubric weights.
+- **`Attempt` (State Machine):** Manages the lifecycle of a learner's attempt. It strictly controls valid state transitions:  
+  `CREATED ➔ SUBMITTED ➔ EVALUATING ➔ COMPLETED / FAILED`  
   This ensures an attempt cannot be evaluated before being submitted, and protects against invalid operations.
-* **`Submission` (Value Object):** Holds the learner's 5 design inputs and calculates section completeness.
-* **`Rubric` & `CriterionEvaluation` (Value Objects):** Represents the 6 design dimensions. Each criterion encapsulates: `score`, `weight`, `evidence` (quote from submission), `concern`, `suggestion`, and `confidence`.
-* **`IEvaluationStrategy` (Strategy Pattern):** An interface that defines how any evaluation engine (LLM, Heuristic rule engine, AST parser) must evaluate a submission.
-* **`CompositeEvaluationPipeline` (Pipeline Pattern):** Runs pre-flight deterministic checks and then executes evaluation strategies in priority order with fallback resilience.
+- **`Submission` (Value Object):** Holds the learner's 5 design inputs and calculates section completeness.
+- **`Rubric` & `CriterionEvaluation` (Value Objects):** Represents the 6 design dimensions. Each criterion encapsulates: `score`, `weight`, `evidence` (quote from submission), `concern`, `suggestion`, and `confidence`.
+- **`IEvaluationStrategy` (Strategy Pattern):** An interface that defines how any evaluation engine (LLM, Heuristic rule engine, AST parser) must evaluate a submission.
+- **`CompositeEvaluationPipeline` (Pipeline Pattern):** Runs pre-flight deterministic checks and then executes evaluation strategies in priority order with fallback resilience.
 
 ---
 
@@ -132,8 +62,8 @@ Rather than asking an LLM to do everything (which leads to hallucinations and un
 ### Change Test A: Supporting a New Submission Format
 *Question: Today the learner submits text and code. Later we add an interactive visual class diagram tool. How much of the domain model changes?*
 
-* **Impact on core domain: ZERO changes to `Problem`, `Attempt`, `EvaluationResult`, or `AttemptService`.**
-* What changes:
+- **Impact on core domain: ZERO changes to `Problem`, `Attempt`, `EvaluationResult`, or `AttemptService`.**
+- What changes:
   1. Add `'diagram_json'` to the `format` property in `Submission`.
   2. Implement an `IDiagramParser` or a strategy that understands node-edge graphs.
   3. Register the strategy in `CompositeEvaluationPipeline`.
@@ -141,8 +71,8 @@ Rather than asking an LLM to do everything (which leads to hallucinations and un
 ### Change Test B: Adding a New Evaluator
 *Question: Later we add an AST static analysis tool or human peer reviews. Can we plug it in without rewriting the practice flow?*
 
-* **Impact on core flow: ZERO changes to the attempt lifecycle.**
-* What changes:
+- **Impact on core flow: ZERO changes to the attempt lifecycle.**
+- What changes:
   1. Create a class implementing `IEvaluationStrategy` (e.g. `AstLinterEvaluator` or `HumanReviewEvaluator`).
   2. Call `pipeline.registerStrategy(new AstLinterEvaluator())`.
   3. The `AttemptService`, API routes, and frontend state machine continue working without any modifications.

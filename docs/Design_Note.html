@@ -3,173 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <title>Design Note - LLD Practice Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @media print {
-      body { font-size: 10.5pt; padding: 0; }
-      @page { margin: 15mm 15mm; }
+    @page {
+      margin: 14mm 16mm;
+      size: A4;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    table { page-break-inside: avoid; }
-    h1, h2, h3 { page-break-after: avoid; }
+    *, *:before, *:after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 10.2pt;
+      margin: 0;
+      padding: 0;
+    }
+    .doc-title {
+      font-size: 20pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 18px 0 8px 0;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      page-break-after: avoid;
+    }
+    .subsection-title {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 14px 0 6px 0;
+      page-break-after: avoid;
+    }
+    .sub-subsection-title {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #334155;
+      margin: 10px 0 4px 0;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 6px 0 8px 0;
+    }
+    strong {
+      color: #0f172a;
+      font-weight: 600;
+    }
+    em {
+      font-style: italic;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 9pt;
+      background-color: #f1f5f9;
+      color: #0f766e;
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+    pre {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 8.8pt;
+      line-height: 1.45;
+      color: #0f172a;
+      overflow-x: auto;
+      margin: 8px 0 10px 0;
+      page-break-inside: avoid;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+    }
+    ul, ol {
+      margin: 6px 0 8px 0;
+      padding-left: 22px;
+    }
+    li {
+      margin: 3px 0;
+    }
+    blockquote {
+      margin: 8px 0;
+      padding: 8px 14px;
+      background-color: #f8fafc;
+      border-left: 3.5px solid #0d9488;
+      color: #334155;
+      font-style: italic;
+      border-radius: 0 4px 4px 0;
+      page-break-inside: avoid;
+    }
+    .divider {
+      border: 0;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 14px 0;
+    }
+    .table-container {
+      margin: 10px 0;
+      overflow-x: auto;
+      page-break-inside: avoid;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+    }
+    th {
+      background-color: #f8fafc;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: left;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    td {
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      vertical-align: top;
+    }
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
   </style>
 </head>
-<body class="bg-white text-gray-900 p-8 max-w-4xl mx-auto">
-  <div class="print-container">
-    <h1 class="text-3xl font-extrabold text-gray-900 border-b pb-3 mb-4">Design Note: Low-Level Architecture & Domain Model</h1>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Candidate:</strong> Priyanshu</p>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Assignment:</strong> LLD Practice Platform — Engineering Assignment</p>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Date:</strong> September 2026</p>
+<body>
+  <h1 class="doc-title">Design Note: Low-Level Architecture & Domain Model</h1>
+<p><strong>Candidate:</strong> Priyanshu</p>
+<p><strong>Assignment:</strong> LLD Practice Platform — Engineering Assignment</p>
+<p><strong>Date:</strong> September 2026</p>
+<hr class="divider" />
+<h2 class="section-title">1. The MVP Scope & User Flow</h2>
+<p>The goal of this MVP is to build a fast, reliable practice loop that helps a developer improve their Low-Level Design skills through repeated attempts:</p>
+<pre><code>[Choose Problem] ──&gt; [Structured 5-Part Canvas] ──&gt; [Submit Solution]
+                                                          │
+                                                          ▼
+[Compare Attempts] &lt;── [Review Attempt History] &lt;── [Evidence-Based Feedback]
+</code></pre>
+<ol>
+<li><strong>Pick a Problem:</strong> The learner chooses from 5 curated classic LLD problems (<em>Parking Lot</em>, <em>Elevator System</em>, <em>Vending Machine</em>, <em>Rate Limiter</em>, <em>Splitwise</em>), each with clear requirements, constraints, and hints.</li>
+<li><strong>Work on the Solution:</strong> Instead of a single text box, the learner provides their assumptions, class relationships, design patterns, code, and concurrency trade-offs.</li>
+<li><strong>Submit & Evaluate:</strong> The system validates basic structure deterministically, runs the evaluation pipeline, and generates structured rubric feedback.</li>
+<li><strong>Review & Iterate:</strong> The learner reviews specific suggestions, starts <strong>Attempt #2</strong>, and opens the <strong>Comparison Modal</strong> to see if their score and architectural decisions improved.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">2. Domain Model & Class Responsibilities</h2>
+<p>I structured the backend using clean Object-Oriented principles and Domain-Driven Design (DDD) boundaries. The core entities and their responsibilities are:</p>
+<h3 class="subsection-title">Core Domain Entities & Interfaces</h3>
+<ul>
+<li><strong><code>Problem</code> (Aggregate Root):</strong> Represents the problem specification, requirements, constraints, expected domain nouns, and rubric weights.</li>
+<li><strong><code>Attempt</code> (State Machine):</strong> Manages the lifecycle of a learner's attempt. It strictly controls valid state transitions:</li>
+</ul>
+<p><code>CREATED ➔ SUBMITTED ➔ EVALUATING ➔ COMPLETED / FAILED</code></p>
+<p>This ensures an attempt cannot be evaluated before being submitted, and protects against invalid operations.</p>
+<ul>
+<li><strong><code>Submission</code> (Value Object):</strong> Holds the learner's 5 design inputs and calculates section completeness.</li>
+<li><strong><code>Rubric</code> & <code>CriterionEvaluation</code> (Value Objects):</strong> Represents the 6 design dimensions. Each criterion encapsulates: <code>score</code>, <code>weight</code>, <code>evidence</code> (quote from submission), <code>concern</code>, <code>suggestion</code>, and <code>confidence</code>.</li>
+<li><strong><code>IEvaluationStrategy</code> (Strategy Pattern):</strong> An interface that defines how any evaluation engine (LLM, Heuristic rule engine, AST parser) must evaluate a submission.</li>
+<li><strong><code>CompositeEvaluationPipeline</code> (Pipeline Pattern):</strong> Runs pre-flight deterministic checks and then executes evaluation strategies in priority order with fallback resilience.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">3. Division of Labor: Deterministic vs. AI Logic</h2>
+<p>One of the main design questions in this assignment is: <em>Which parts should be deterministic, and which parts benefit from an LLM?</em></p>
+<p>Rather than asking an LLM to do everything (which leads to hallucinations and unreliable scores), I separated the responsibilities:</p>
+<div class="table-container"><table>
+<tr><th>Task</th><th>Handled By</th><th>Why</th></tr>
+<tr><td><strong>Input validation & spam detection</strong></td><td>Deterministic (<code>ISubmissionValidator</code>)</td><td>Fast, zero-cost checks for empty fields, character counts, and placeholder text (<code>lorem ipsum</code>, <code>todo</code>).</td></tr>
+<tr><td><strong>State transitions & attempt sequencing</strong></td><td>Deterministic (<code>Attempt</code>)</td><td>Invariant rules belong in the domain entity, not in AI logic.</td></tr>
+<tr><td><strong>Weighted score calculation</strong></td><td>Deterministic (<code>Rubric</code>)</td><td>Overall scores are calculated strictly by multiplying criterion scores with pre-set weights, avoiding math errors.</td></tr>
+<tr><td><strong>Keyword & modifier detection</strong></td><td>Deterministic Heuristic</td><td>Checks for explicit modifiers (<code>synchronized</code>, <code>volatile</code>, <code>interface</code>, <code>private</code>) and GoF pattern mentions.</td></tr>
+<tr><td><strong>Responsibility analysis & trade-offs</strong></td><td>Structured LLM / Heuristic</td><td>Assessing whether a class has too many responsibilities (SRP) or whether coupling is too tight requires semantic reasoning.</td></tr>
+<tr><td><strong>Evidence extraction & actionable advice</strong></td><td>Structured LLM / Heuristic</td><td>Pulling relevant quotes from candidate text and providing targeted suggestions for the next attempt.</td></tr>
+</table></div>
+<hr class="divider" />
+<h2 class="section-title">4. Extensibility Tests (Change Tests A & B)</h2>
+<h3 class="subsection-title">Change Test A: Supporting a New Submission Format</h3>
+<p><em>Question: Today the learner submits text and code. Later we add an interactive visual class diagram tool. How much of the domain model changes?</em></p>
+<ul>
+<li><strong>Impact on core domain: ZERO changes to <code>Problem</code>, <code>Attempt</code>, <code>EvaluationResult</code>, or <code>AttemptService</code>.</strong></li>
+<li>What changes:</li>
+</ul>
+<ol>
+<li>Add <code>'diagram_json'</code> to the <code>format</code> property in <code>Submission</code>.</li>
+<li>Implement an <code>IDiagramParser</code> or a strategy that understands node-edge graphs.</li>
+<li>Register the strategy in <code>CompositeEvaluationPipeline</code>.</li>
+</ol>
+<h3 class="subsection-title">Change Test B: Adding a New Evaluator</h3>
+<p><em>Question: Later we add an AST static analysis tool or human peer reviews. Can we plug it in without rewriting the practice flow?</em></p>
+<ul>
+<li><strong>Impact on core flow: ZERO changes to the attempt lifecycle.</strong></li>
+<li>What changes:</li>
+</ul>
+<ol>
+<li>Create a class implementing <code>IEvaluationStrategy</code> (e.g. <code>AstLinterEvaluator</code> or <code>HumanReviewEvaluator</code>).</li>
+<li>Call <code>pipeline.registerStrategy(new AstLinterEvaluator())</code>.</li>
+<li>The <code>AttemptService</code>, API routes, and frontend state machine continue working without any modifications.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">5. Practical Reliability, Async Handling & Scale</h2>
+<p>To keep the system robust without over-engineering distributed microservices:</p>
+<ol>
+<li><strong>Save Before Evaluating:</strong> When a user clicks submit, the submission is saved to the database/repository in the <code>SUBMITTED</code> state <strong>before</strong> the evaluator runs. If the AI service times out or the network drops, the candidate's work is never lost.</li>
+<li><strong>Graceful Fallback:</strong> If no OpenAI/Gemini API key is provided, or if an API call times out, the pipeline automatically falls back to <code>HeuristicRubricEvaluator</code>. The app runs 100% offline out-of-the-box.</li>
+<li><strong>Failure Recovery:</strong> If evaluation encounters an error, the attempt moves to <code>FAILED</code> with a human-readable <code>failureReason</code>, and the user can click <strong>Retry</strong> with one click.</li>
+<li><strong>Idempotency:</strong> Re-submitting an already evaluated attempt is blocked by the entity state guard.</li>
+<li><strong>Path to Scale (Lightweight HLD):</strong> For this prototype, a clean in-memory monolith is fast and simple. If traffic grows, the easiest scaling step is:</li>
+</ol>
+<ul>
+<li>Swap <code>InMemoryAttemptRepository</code> with a PostgreSQL database.</li>
+<li>Offload the evaluation call to a background job queue (e.g. BullMQ / Redis) and push real-time updates to the UI via Server-Sent Events (SSE).</li>
+</ul>
 
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">1. The MVP Scope & User Flow</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">The goal of this MVP is to build a fast, reliable practice loop that helps a developer improve their Low-Level Design skills through repeated attempts:</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">``<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"></p>
-<p class="text-gray-700 leading-relaxed my-2.5">[Choose Problem] ──> [Structured 5-Part Canvas] ──> [Submit Solution]</p>
-<p class="text-gray-700 leading-relaxed my-2.5">│</p>
-<p class="text-gray-700 leading-relaxed my-2.5">▼</p>
-<p class="text-gray-700 leading-relaxed my-2.5">[Compare Attempts] <── [Review Attempt History] <── [Evidence-Based Feedback]</p>
-<p class="text-gray-700 leading-relaxed my-2.5"></code>`<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"></p>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Pick a Problem:</strong> The learner chooses from 5 curated classic LLD problems (<em class="italic text-gray-800">Parking Lot</em>, <em class="italic text-gray-800">Elevator System</em>, <em class="italic text-gray-800">Vending Machine</em>, <em class="italic text-gray-800">Rate Limiter</em>, <em class="italic text-gray-800">Splitwise</em>), each with clear requirements, constraints, and hints.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Work on the Solution:</strong> Instead of a single text box, the learner provides their assumptions, class relationships, design patterns, code, and concurrency trade-offs.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Submit & Evaluate:</strong> The system validates basic structure deterministically, runs the evaluation pipeline, and generates structured rubric feedback.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Review & Iterate:</strong> The learner reviews specific suggestions, starts <strong class="font-bold text-gray-900">Attempt #2</strong>, and opens the <strong class="font-bold text-gray-900">Comparison Modal</strong> to see if their score and architectural decisions improved.</li>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">2. Domain Model & Class Responsibilities</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">I structured the backend using clean Object-Oriented principles and Domain-Driven Design (DDD) boundaries. The core entities and their responsibilities are:</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5"></code>`<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">mermaid</p>
-<p class="text-gray-700 leading-relaxed my-2.5">classDiagram</p>
-<p class="text-gray-700 leading-relaxed my-2.5">class Problem {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String id</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String title</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+Difficulty difficulty</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+List~String~ functionalRequirements</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+List~String~ keyEntitiesExpected</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+Rubric rubric</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class Attempt {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String id</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String problemId</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+int attemptNumber</p>
-<p class="text-gray-700 leading-relaxed my-2.5">-AttemptStatus status</p>
-<p class="text-gray-700 leading-relaxed my-2.5">-Submission submission</p>
-<p class="text-gray-700 leading-relaxed my-2.5">-EvaluationResult evaluation</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+submit(Submission)</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+startEvaluation()</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+completeEvaluation(EvaluationResult)</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+failEvaluation(reason)</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class Submission {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String requirementsAndAssumptions</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String classModelTextOrDiagram</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String designPatternsRationale</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String implementationCode</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String tradeoffsAndEdgeCases</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+getSectionCompleteness()</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class EvaluationResult {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+int overallScore</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String grade</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String summary</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+List~CriterionEvaluation~ criteria</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+List~String~ strengths</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+List~String~ keyAreasForImprovement</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class CriterionEvaluation {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+RubricDimension dimension</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+int score</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+int weight</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String evidence</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String concern</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+String suggestion</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+getWeightedScore(): double</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class IEvaluationStrategy {</p>
-<p class="text-gray-700 leading-relaxed my-2.5"><<interface>></p>
-<p class="text-gray-700 leading-relaxed my-2.5">+evaluate(Submission, Problem): Promise~EvaluationResult~</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">class CompositeEvaluationPipeline {</p>
-<p class="text-gray-700 leading-relaxed my-2.5">-List~IEvaluationStrategy~ strategies</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+registerStrategy(strategy)</p>
-<p class="text-gray-700 leading-relaxed my-2.5">+evaluate(Submission, Problem)</p>
-<p class="text-gray-700 leading-relaxed my-2.5">}</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">Problem "1" *-- "1" Rubric</p>
-<p class="text-gray-700 leading-relaxed my-2.5">Attempt "1" *-- "0..1" Submission</p>
-<p class="text-gray-700 leading-relaxed my-2.5">Attempt "1" *-- "0..1" EvaluationResult</p>
-<p class="text-gray-700 leading-relaxed my-2.5">EvaluationResult "1" *-- "6" CriterionEvaluation</p>
-<p class="text-gray-700 leading-relaxed my-2.5">CompositeEvaluationPipeline ..> IEvaluationStrategy</p>
-<p class="text-gray-700 leading-relaxed my-2.5"></code>`<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"></p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Why each class exists:</h3>
-
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>Problem<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (Aggregate Root):</strong> Represents the problem specification, requirements, constraints, expected domain nouns, and rubric weights.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>Attempt<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (State Machine):</strong> Manages the lifecycle of a learner's attempt. It strictly controls valid state transitions:</p>
-<p class="text-gray-700 leading-relaxed my-2.5">$$\text{CREATED} \longrightarrow \text{SUBMITTED} \longrightarrow \text{EVALUATING} \longrightarrow \text{COMPLETED} \; / \; \text{FAILED}$$</p>
-<p class="text-gray-700 leading-relaxed my-2.5">This ensures an attempt cannot be evaluated before being submitted, and protects against invalid operations.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>Submission<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (Value Object):</strong> Holds the learner's 5 design inputs and calculates section completeness.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>Rubric<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> & </code>CriterionEvaluation<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (Value Objects):</strong> Represents the 6 design dimensions. Each criterion encapsulates: </code>score<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>weight<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>evidence<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (quote from submission), </code>concern<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>suggestion<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, and </code>confidence<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>IEvaluationStrategy<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (Strategy Pattern):</strong> An interface that defines how any evaluation engine (LLM, Heuristic rule engine, AST parser) must evaluate a submission.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900"></code>CompositeEvaluationPipeline<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (Pipeline Pattern):</strong> Runs pre-flight deterministic checks and then executes evaluation strategies in priority order with fallback resilience.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">3. Division of Labor: Deterministic vs. AI Logic</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">One of the main design questions in this assignment is: <em class="italic text-gray-800">Which parts should be deterministic, and which parts benefit from an LLM?</em></p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">Rather than asking an LLM to do everything (which leads to hallucinations and unreliable scores), I separated the responsibilities:</p>
-
-<div class="overflow-x-auto my-4"><table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm"><thead><tr class="bg-gray-50"><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Task</th><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Handled By</th><th class="px-3 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Why</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Input validation & spam detection</strong></td><td class="px-3 py-2 text-gray-700">Deterministic (</code>ISubmissionValidator<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">)</td><td class="px-3 py-2 text-gray-700">Fast, zero-cost checks for empty fields, character counts, and placeholder text (</code>lorem ipsum<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>todo<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">).</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">State transitions & attempt sequencing</strong></td><td class="px-3 py-2 text-gray-700">Deterministic (</code>Attempt<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">)</td><td class="px-3 py-2 text-gray-700">Invariant rules belong in the domain entity, not in AI logic.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Weighted score calculation</strong></td><td class="px-3 py-2 text-gray-700">Deterministic (</code>Rubric<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">)</td><td class="px-3 py-2 text-gray-700">Overall scores are calculated strictly by multiplying criterion scores with pre-set weights, avoiding math errors.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Keyword & modifier detection</strong></td><td class="px-3 py-2 text-gray-700">Deterministic Heuristic</td><td class="px-3 py-2 text-gray-700">Checks for explicit modifiers (</code>synchronized<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>volatile<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>interface<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>private<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">) and GoF pattern mentions.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Responsibility analysis & trade-offs</strong></td><td class="px-3 py-2 text-gray-700">Structured LLM / Heuristic</td><td class="px-3 py-2 text-gray-700">Assessing whether a class has too many responsibilities (SRP) or whether coupling is too tight requires semantic reasoning.</td></tr><tr><td class="px-3 py-2 text-gray-700"><strong class="font-bold text-gray-900">Evidence extraction & actionable advice</strong></td><td class="px-3 py-2 text-gray-700">Structured LLM / Heuristic</td><td class="px-3 py-2 text-gray-700">Pulling relevant quotes from candidate text and providing targeted suggestions for the next attempt.</td></tr></tbody></table></div>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">4. Extensibility Tests (Change Tests A & B)</h2>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Change Test A: Supporting a New Submission Format</h3>
-<p class="text-gray-700 leading-relaxed my-2.5"><em class="italic text-gray-800">Question: Today the learner submits text and code. Later we add an interactive visual class diagram tool. How much of the domain model changes?</em></p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">Impact on core domain: ZERO changes to </code>Problem<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>Attempt<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, </code>EvaluationResult<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, or </code>AttemptService<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">.</strong></p>
-<p class="text-gray-700 leading-relaxed my-2.5">* What changes:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1">Add </code>'diagram_json'<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> to the </code>format<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> property in </code>Submission<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1">Implement an </code>IDiagramParser<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> or a strategy that understands node-edge graphs.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1">Register the strategy in </code>CompositeEvaluationPipeline<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">.</li>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">Change Test B: Adding a New Evaluator</h3>
-<p class="text-gray-700 leading-relaxed my-2.5"><em class="italic text-gray-800">Question: Later we add an AST static analysis tool or human peer reviews. Can we plug it in without rewriting the practice flow?</em></p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">Impact on core flow: ZERO changes to the attempt lifecycle.</strong></p>
-<p class="text-gray-700 leading-relaxed my-2.5">* What changes:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1">Create a class implementing </code>IEvaluationStrategy<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> (e.g. </code>AstLinterEvaluator<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> or </code>HumanReviewEvaluator<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">).</li>
-<li class="ml-4 list-decimal text-gray-700 my-1">Call </code>pipeline.registerStrategy(new AstLinterEvaluator())<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1">The </code>AttemptService<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, API routes, and frontend state machine continue working without any modifications.</li>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">5. Practical Reliability, Async Handling & Scale</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">To keep the system robust without over-engineering distributed microservices:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Save Before Evaluating:</strong> When a user clicks submit, the submission is saved to the database/repository in the </code>SUBMITTED<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> state <strong class="font-bold text-gray-900">before</strong> the evaluator runs. If the AI service times out or the network drops, the candidate's work is never lost.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Graceful Fallback:</strong> If no OpenAI/Gemini API key is provided, or if an API call times out, the pipeline automatically falls back to </code>HeuristicRubricEvaluator<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">. The app runs 100% offline out-of-the-box.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Failure Recovery:</strong> If evaluation encounters an error, the attempt moves to </code>FAILED<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200"> with a human-readable </code>failureReason<code class="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono text-sm border border-gray-200">, and the user can click <strong class="font-bold text-gray-900">Retry</strong> with one click.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Idempotency:</strong> Re-submitting an already evaluated attempt is blocked by the entity state guard.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Path to Scale (Lightweight HLD):</strong> For this prototype, a clean in-memory monolith is fast and simple. If traffic grows, the easiest scaling step is:</li>
-<li class="ml-4 list-disc text-gray-700 my-1">Swap </code>InMemoryAttemptRepository` with a PostgreSQL database.</li>
-<li class="ml-4 list-disc text-gray-700 my-1">Offload the evaluation call to a background job queue (e.g. BullMQ / Redis) and push real-time updates to the UI via Server-Sent Events (SSE).</li>
-
-  </div>
 </body>
 </html>

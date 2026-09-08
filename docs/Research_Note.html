@@ -3,104 +3,230 @@
 <head>
   <meta charset="UTF-8">
   <title>Research Note - LLD Practice Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @media print {
-      body { font-size: 10.5pt; padding: 0; }
-      @page { margin: 15mm 15mm; }
+    @page {
+      margin: 14mm 16mm;
+      size: A4;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    table { page-break-inside: avoid; }
-    h1, h2, h3 { page-break-after: avoid; }
+    *, *:before, *:after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 10.2pt;
+      margin: 0;
+      padding: 0;
+    }
+    .doc-title {
+      font-size: 20pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 18px 0 8px 0;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      page-break-after: avoid;
+    }
+    .subsection-title {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 14px 0 6px 0;
+      page-break-after: avoid;
+    }
+    .sub-subsection-title {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #334155;
+      margin: 10px 0 4px 0;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 6px 0 8px 0;
+    }
+    strong {
+      color: #0f172a;
+      font-weight: 600;
+    }
+    em {
+      font-style: italic;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 9pt;
+      background-color: #f1f5f9;
+      color: #0f766e;
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+    pre {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 8.8pt;
+      line-height: 1.45;
+      color: #0f172a;
+      overflow-x: auto;
+      margin: 8px 0 10px 0;
+      page-break-inside: avoid;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+    }
+    ul, ol {
+      margin: 6px 0 8px 0;
+      padding-left: 22px;
+    }
+    li {
+      margin: 3px 0;
+    }
+    blockquote {
+      margin: 8px 0;
+      padding: 8px 14px;
+      background-color: #f8fafc;
+      border-left: 3.5px solid #0d9488;
+      color: #334155;
+      font-style: italic;
+      border-radius: 0 4px 4px 0;
+      page-break-inside: avoid;
+    }
+    .divider {
+      border: 0;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 14px 0;
+    }
+    .table-container {
+      margin: 10px 0;
+      overflow-x: auto;
+      page-break-inside: avoid;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+    }
+    th {
+      background-color: #f8fafc;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: left;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    td {
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      vertical-align: top;
+    }
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
   </style>
 </head>
-<body class="bg-white text-gray-900 p-8 max-w-4xl mx-auto">
-  <div class="print-container">
-    <h1 class="text-3xl font-extrabold text-gray-900 border-b pb-3 mb-4">Research Note: Why Low-Level Design Practice is Broken & How to Fix It</h1>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Candidate:</strong> Priyanshu</p>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Assignment:</strong> LLD Practice Platform — Engineering Assignment</p>
-<p class="text-gray-700 leading-relaxed my-2.5"><strong class="font-bold text-gray-900">Date:</strong> September 2026</p>
+<body>
+  <h1 class="doc-title">Research Note: Why Low-Level Design Practice is Broken & How to Fix It</h1>
+<p><strong>Candidate:</strong> Priyanshu</p>
+<p><strong>Assignment:</strong> LLD Practice Platform — Engineering Assignment</p>
+<p><strong>Date:</strong> September 2026</p>
+<hr class="divider" />
+<h2 class="section-title">1. The Core Problem: Why Practicing LLD is Frustrating</h2>
+<p>When practicing Data Structures & Algorithms (DSA), the feedback loop is crystal clear: your code either passes the hidden test cases or it fails.</p>
+<p>Low-Level Design (LLD) is completely different. When an engineer sits down to design a <strong>Parking Lot</strong>, an <strong>Elevator System</strong>, or a <strong>Splitwise app</strong>, they face three big questions:</p>
+<ol>
+<li><em>Did I split responsibilities cleanly, or did I accidentally build a massive God-class that handles everything?</em></li>
+<li><em>Is my design actually extensible, or will adding one new requirement break all my classes?</em></li>
+<li><em>If my solution looks completely different from the solution on GitHub, is mine actually wrong, or is it just a valid alternative trade-off?</em></li>
+</ol>
+<p>Because there are no automated test fixtures that can grade "good Object-Oriented Design," learners are left guessing. They usually end up memorizing static solutions from YouTube or GitHub without understanding <em>why</em> specific design choices were made.</p>
+<hr class="divider" />
+<h2 class="section-title">2. What I Found When Researching Existing Tools</h2>
+<p>I spent time analyzing how developers currently prepare for LLD interviews and looked at the four most common options:</p>
+<h3 class="subsection-title">1. Static GitHub Repositories (e.g., "awesome-low-level-design")</h3>
+<ul>
+<li><strong>What people do:</strong> Read someone else's Java/C++ repository and try to recreate it from memory.</li>
+<li><strong>The Problem:</strong> It reinforces the idea that there is only <strong>one golden solution</strong>. If you used the Strategy Pattern instead of the State Pattern, you have no way of knowing whether your choice was reasonable. It teaches memorization rather than design thinking.</li>
+</ul>
+<h3 class="subsection-title">2. LeetCode "Design" Problems (e.g., Design Underground System, LRU Cache)</h3>
+<ul>
+<li><strong>What people do:</strong> Write code to satisfy specific function inputs and outputs.</li>
+<li><strong>The Problem:</strong> LeetCode only checks input/output correctness. You can pass the test suite with a 400-line monolithic class filled with nested HashMaps and raw integers. It rewards quick algorithmic hacks and completely ignores SOLID principles, encapsulation, and clean abstractions.</li>
+</ul>
+<h3 class="subsection-title">3. Asking General-Purpose AI (ChatGPT / Claude / Copilot)</h3>
+<ul>
+<li><strong>What people do:</strong> Paste their code and ask <em>"Is this a good LLD design?"</em></li>
+<li><strong>The Problem:</strong> Unstructured AI feedback is usually overly polite, giving generic compliments and arbitrary nitpicks (like variable naming). It rarely quotes specific lines of code as evidence, changes its opinion if you ask twice, and doesn't grade against a consistent standard.</li>
+</ul>
+<h3 class="subsection-title">4. Paid Mock Interviews (Pramp / Interviewing.io)</h3>
+<ul>
+<li><strong>What people do:</strong> 45-minute live sessions with a senior engineer.</li>
+<li><strong>The Problem:</strong> Highly valuable, but too expensive and high-friction for daily, iterative practice.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">3. The Three Major Gaps</h2>
+<p>From this research, three missing pieces became clear:</p>
+<ol>
+<li><strong>Feedback Must Cite Real Evidence:</strong> General comments like <em>"your design is tightly coupled"</em> aren't helpful. Feedback needs to point directly to the learner's code:</li>
+</ol>
+<blockquote><em>"Class <code>ParkingFloor</code> directly instantiates <code>HourlyPricingStrategy</code> on line 12 instead of taking an <code>IPricingStrategy</code> interface in its constructor."</em></blockquote>
+<ol>
+<li><strong>There is No Single "Right" Answer:</strong> Two completely different designs can both be good if their trade-offs make sense for the problem's constraints. Evaluation must grade how well the solution satisfies the requirements, not whether it matches a template.</li>
+</ol>
+<ol>
+<li><strong>Practice Requires an Iteration Loop, Not a One-Time Test:</strong> The entire point of practice is:</li>
+</ol>
+<p><code>Attempt #1 ➔ Inspect Weaknesses ➔ Fix Them in Attempt #2 ➔ Measure Improvement</code></p>
+<p>Current tools treat an attempt as a dead end. Learners need to see a side-by-side comparison of what changed between attempts.</p>
+<hr class="divider" />
+<h2 class="section-title">4. Product Direction & Approach</h2>
+<p>To build a focused, practical MVP, I designed the product around three core ideas:</p>
+<h3 class="subsection-title">A. A Structured 5-Part Design Canvas</h3>
+<p>Instead of giving the user a blank code editor (which encourages jumping straight into writing methods without thinking), the canvas asks for the five things an interviewer actually looks for:</p>
+<ol>
+<li><strong>Assumptions & Scope:</strong> What is in scope and what is left out?</li>
+<li><strong>Class Structure / Model:</strong> What are the domain entities, attributes, and relationships?</li>
+<li><strong>Design Patterns & Rationale:</strong> Why was a pattern chosen over simple logic?</li>
+<li><strong>Implementation Code:</strong> Clean interfaces, access modifiers, and core methods.</li>
+<li><strong>Trade-offs & Concurrency:</strong> How are thread-safety and race conditions handled?</li>
+</ol>
+<h3 class="subsection-title">B. A Fixed 6-Dimension Rubric</h3>
+<p>Every submission is evaluated against 6 concrete design dimensions:</p>
+<ul>
+<li>Requirement Understanding (15%)</li>
+<li>Class Responsibilities & Cohesion / SRP (20%)</li>
+<li>Coupling, Interfaces & Encapsulation (20%)</li>
+<li>Appropriate Use of Design Patterns (15%)</li>
+<li>Extensibility & Trade-offs (15%)</li>
+<li>Edge Cases, Concurrency & Testability (15%)</li>
+</ul>
+<p>For each dimension, the feedback must provide:</p>
+<p><code>Criterion ➔ Score ➔ Observed Evidence (Quote) ➔ Concern ➔ Actionable Suggestion</code></p>
+<h3 class="subsection-title">C. Attempt History & Delta Comparison</h3>
+<p>Every attempt is saved. When a learner submits a second attempt after fixing their code, they can open a <strong>Comparison View</strong> that shows exact score deltas per dimension, confirming that they actually resolved the previous flaws.</p>
+<hr class="divider" />
+<h2 class="section-title">5. Summary</h2>
+<p>By structuring the submission, evaluating against an evidence-based rubric, and letting learners measure improvement across attempts, this platform turns Low-Level Design from subjective guesswork into a practical, repeatable learning loop.</p>
 
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">1. The Core Problem: Why Practicing LLD is Frustrating</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">When practicing Data Structures & Algorithms (DSA), the feedback loop is crystal clear: your code either passes the 50 hidden test cases or it times out on an edge case.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">Low-Level Design (LLD) is completely different. When an engineer sits down to design a <strong class="font-bold text-gray-900">Parking Lot</strong>, an <strong class="font-bold text-gray-900">Elevator System</strong>, or a <strong class="font-bold text-gray-900">Splitwise app</strong>, they usually face three big questions:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1"><em class="italic text-gray-800">Did I split responsibilities cleanly, or did I accidentally build a massive God-class that handles everything?</em></li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><em class="italic text-gray-800">Is my design actually extensible, or will adding one new requirement break all my classes?</em></li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><em class="italic text-gray-800">If my solution looks completely different from the solution on GitHub, is mine actually wrong, or is it just a valid alternative trade-off?</em></li>
-
-<p class="text-gray-700 leading-relaxed my-2.5">Because there are no automated unit tests that can grade "good Object-Oriented Design," learners are left guessing. They usually memorize static solutions from YouTube or GitHub without really understanding <em class="italic text-gray-800">why</em> certain design choices were made.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">2. What I Found When Researching Existing Tools</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">I spent time analyzing how developers currently prepare for LLD interviews and looked at the four most common options:</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">1. Static GitHub Repositories (e.g., "awesome-low-level-design")</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">What people do:</strong> Read someone else's Java/C++ code and try to rewrite it from memory.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">The Problem:</strong> It reinforces the idea that there is only <strong class="font-bold text-gray-900">one golden solution</strong>. If you used the Strategy Pattern instead of the State Pattern, you have no way to know whether your choice was reasonable. It teaches memorization rather than design thinking.</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">2. LeetCode "Design" Problems (e.g., Design Underground System, LRU Cache)</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">What people do:</strong> Write code to satisfy specific function inputs and outputs.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">The Problem:</strong> LeetCode only checks I/O correctness. You can pass the test suite with a 400-line monolithic class filled with nested HashMaps and raw integers. It rewards quick algorithmic hacks and completely ignores SOLID principles, encapsulation, and clean abstractions.</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">3. Asking General-Purpose AI (ChatGPT / Claude / Copilot)</h3>
-<p class="text-gray-700 leading-relaxed my-2.5"><em class="italic text-gray-800"> <strong class="font-bold text-gray-900">What people do:</strong> Paste their code and ask </em>"Is this a good LLD design?"*</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">The Problem:</strong> Unstructured AI feedback is usually overly polite, giving generic compliments and arbitrary nitpicks (like variable naming). It rarely quotes specific lines of code as evidence, changes its opinion if you ask twice, and doesn't grade against a consistent standard.</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">4. Paid Mock Interviews (Pramp / Interviewing.io)</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">What people do:</strong> 45-minute live sessions with a senior engineer.</p>
-<p class="text-gray-700 leading-relaxed my-2.5">* <strong class="font-bold text-gray-900">The Problem:</strong> Highly valuable, but too expensive and high-friction for daily, iterative practice.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">3. The Three Major Gaps</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">From this research, three missing pieces became clear:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Feedback Must Cite Real Evidence:</strong> General comments like <em class="italic text-gray-800">"your design is tightly coupled"</em> aren't helpful. Feedback needs to point directly to the learner's code: <em class="italic text-gray-800">"Class ParkingFloor directly instantiates HourlyPricingStrategy on line 12 instead of taking an IPricingStrategy interface in its constructor."</em></li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">There is No Single "Right" Answer:</strong> Two completely different designs can both be good if their trade-offs make sense for the problem's constraints. Evaluation must grade how well the solution satisfies the requirements, not whether it matches a template.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Practice Requires an Iteration Loop, Not a One-Time Test:</strong> The whole point of practice is:</li>
-<p class="text-gray-700 leading-relaxed my-2.5">$$\text{Attempt \#1} \longrightarrow \text{See Mistakes} \longrightarrow \text{Fix Them in Attempt \#2} \longrightarrow \text{Verify Improvement}$$</p>
-<p class="text-gray-700 leading-relaxed my-2.5">Current tools treat an attempt as a dead end. Learners need to see a side-by-side comparison of what changed between attempts.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">4. Product Direction & Approach</h2>
-
-<p class="text-gray-700 leading-relaxed my-2.5">To build a focused, practical MVP, I designed the product around three core ideas:</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">A. A Structured 5-Part Design Canvas</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">Instead of giving the user a blank code editor (which encourages jumping straight into writing methods without thinking), the canvas asks for the five things an interviewer actually looks for:</p>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Assumptions & Scope:</strong> What is in scope and what is left out?</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Class Structure / Model:</strong> What are the domain entities, attributes, and relationships?</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Design Patterns & Rationale:</strong> Why was a pattern chosen over simple logic?</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Implementation Code:</strong> Clean interfaces, access modifiers, and core methods.</li>
-<li class="ml-4 list-decimal text-gray-700 my-1"><strong class="font-bold text-gray-900">Trade-offs & Concurrency:</strong> How are thread-safety and race conditions handled?</li>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">B. A Fixed 6-Dimension Rubric</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">Every submission is evaluated against 6 concrete design dimensions:</p>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Requirement Understanding (15%)</em></li>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Class Responsibilities & Cohesion / SRP (20%)</em></li>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Coupling, Interfaces & Encapsulation (20%)</em></li>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Appropriate Use of Design Patterns (15%)</em></li>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Extensibility & Trade-offs (15%)</em></li>
-<li class="ml-4 list-disc text-gray-700 my-1"><em class="italic text-gray-800">Edge Cases, Concurrency & Testability (15%)</em></li>
-
-<p class="text-gray-700 leading-relaxed my-2.5">For each dimension, the feedback must provide:</p>
-<p class="text-gray-700 leading-relaxed my-2.5">$$\textbf{Criterion} \longrightarrow \textbf{Score} \longrightarrow \textbf{Evidence (Quote)} \longrightarrow \textbf{Concern} \longrightarrow \textbf{Suggestion}$$</p>
-
-<h3 class="text-xl font-bold text-gray-800 mt-4 mb-2">C. Attempt History & Delta Comparison</h3>
-<p class="text-gray-700 leading-relaxed my-2.5">Every attempt is saved. When a learner submits a second attempt after fixing their code, they can open a <strong class="font-bold text-gray-900">Comparison View</strong> that shows exact score deltas ($\Delta \text{Score}$) per dimension, confirming that they actually resolved the previous flaws.</p>
-
-<p class="text-gray-700 leading-relaxed my-2.5">---</p>
-
-<h2 class="text-2xl font-bold text-gray-800 border-b pb-2 mt-6 mb-3">5. Summary</h2>
-<p class="text-gray-700 leading-relaxed my-2.5">By structuring the submission, evaluating against an evidence-based rubric, and letting learners measure improvement across attempts, this platform turns Low-Level Design from subjective guesswork into a practical, repeatable learning loop.</p>
-
-  </div>
 </body>
 </html>
